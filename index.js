@@ -34,7 +34,11 @@ function main() {
 
 function Listener() {
     if (active) return clearTimeout(rightTimeout)
+    rLeft(0)
     rRight(0)
+    buttons(0)
+    dpad(0)
+
 }
 
 function rRight(x) {
