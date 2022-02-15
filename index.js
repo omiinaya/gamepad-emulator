@@ -39,12 +39,12 @@ function Listener() {
 
 function rRight(x) {
     let test = [Math.sin(x), Math.cos(x)]
-    //_vgen.setAxisR(1, test[0], test[1]);
     _vgen.setAxisR(1, test[0], test[1]);
+    //_vgen.setAxisR(1, 1, 0.0);
 
     rightTimeout = setTimeout(function () {
         rRight(x + 0.1);
-        console.log(test)
+        console.log(active)
     }, 100);
 }
 
