@@ -44,7 +44,8 @@ function rLeft(x) {
 }
 
 function rRight(x) {
-    _vgen.setAxisR(1, Math.sin(x), Math.cos(x));
+    let test = [Math.sin(x), Math.cos(x)]
+    _vgen.setAxisR(1, test[0], test[1]);
 
     setTimeout(function () {
         rRight(x + 0.1);
