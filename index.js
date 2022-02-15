@@ -17,6 +17,7 @@ catch (e) {
 
 let active = true;
 let rightTimeout;
+let leftTimeout;
 
 function main() {
     console.log("Ready");
@@ -26,19 +27,29 @@ function main() {
         active = !active
         Listener()
     })
-    //rLeft(0);
-    //rRight(0);
-    //buttons(0);
-    //dpad(0);
 }
 
 function Listener() {
-    if (active) return clearTimeout(rightTimeout)
-    rLeft(0)
-    rRight(0)
-    buttons(0)
-    dpad(0)
+    if (active) {
+        clearTimeout(leftTimeout)
+        return
+    }
+    rLeft('downleft')
+}
 
+function rLeft(direction) {
+    if (direction === 'up')         return _vgen.setAxisL(1, 0.0, 1.0)
+    if (direction === 'upright')    return _vgen.setAxisL(1, 1.0, 1.0)
+    if (direction === 'upleft')    return _vgen.setAxisL(1, -1.0, 1.0)
+    if (direction === 'right')      return _vgen.setAxisL(1, 1.0, 0.0)
+    if (direction === 'down')       return _vgen.setAxisL(1, 0.0, -1.0)
+    if (direction === 'downright')  return _vgen.setAxisL(1, 1.0, -1.0)
+    if (direction === 'downleft')    return _vgen.setAxisL(1, -1.0, -1.0)
+    if (direction === 'left')       return _vgen.setAxisL(1, -1.0, 0.0)
+
+    leftTimeout = setTimeout(function () {
+        rLeft();
+    }, 100);
 }
 
 function rRight(x) {
@@ -49,14 +60,6 @@ function rRight(x) {
     rightTimeout = setTimeout(function () {
         rRight(x + 0.1);
         console.log(active)
-    }, 100);
-}
-
-function rLeft(x) {
-    _vgen.setAxisL(1, Math.sin(x), Math.cos(x));
-
-    setTimeout(function () {
-        rLeft(x + 0.1);
     }, 100);
 }
 
