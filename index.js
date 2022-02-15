@@ -15,7 +15,7 @@ catch (e) {
     });
 }
 
-let active = false;
+let active = true;
 let rightTimeout;
 
 function main() {
@@ -23,6 +23,7 @@ function main() {
     ioHook.start();
     ioHook.on('keydown', function (event) {
         if (event.rawcode != 46) return
+        active = !active
         Listener()
     })
     //rLeft(0);
@@ -31,12 +32,8 @@ function main() {
     //dpad(0);
 }
 
-function Listener(active) {
-    console.log(rightTimeout)
-    if (rightTimeout != undefined) { 
-        clearTimeout(rightTimeout)
-        return
-    }
+function Listener() {
+    if (active) return clearTimeout(rightTimeout)
     rRight(0)
 }
 
@@ -47,9 +44,8 @@ function rRight(x) {
 
     rightTimeout = setTimeout(function () {
         rRight(x + 0.1);
-        //console.log(test)
-        console.log(rightTimeout)
-    }, 1000);
+        console.log(test)
+    }, 100);
 }
 
 function rLeft(x) {
