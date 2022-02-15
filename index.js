@@ -15,24 +15,41 @@ catch (e) {
     });
 }
 
+let active = false;
+let rightTimeout;
+
 function main() {
     console.log("Ready");
     ioHook.start();
-    //left = 37
-    //up = 38
-    //right = 39
-    //down = 40
     ioHook.on('keydown', function (event) {
-        console.log(event);
-    });
+        if (event.rawcode != 46) return
+        Listener()
+    })
     //rLeft(0);
-    rRight(0);
+    //rRight(0);
     //buttons(0);
     //dpad(0);
 }
 
-function listener() {
+function Listener(active) {
+    console.log(rightTimeout)
+    if (rightTimeout != undefined) { 
+        clearTimeout(rightTimeout)
+        return
+    }
+    rRight(0)
+}
 
+function rRight(x) {
+    let test = [Math.sin(x), Math.cos(x)]
+    //_vgen.setAxisR(1, test[0], test[1]);
+    _vgen.setAxisR(1, test[0], test[1]);
+
+    rightTimeout = setTimeout(function () {
+        rRight(x + 0.1);
+        //console.log(test)
+        console.log(rightTimeout)
+    }, 1000);
 }
 
 function rLeft(x) {
@@ -40,15 +57,6 @@ function rLeft(x) {
 
     setTimeout(function () {
         rLeft(x + 0.1);
-    }, 100);
-}
-
-function rRight(x) {
-    let test = [Math.sin(x), Math.cos(x)]
-    _vgen.setAxisR(1, test[0], test[1]);
-
-    setTimeout(function () {
-        rRight(x + 0.1);
     }, 100);
 }
 
