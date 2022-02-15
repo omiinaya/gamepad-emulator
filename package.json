@@ -1,0 +1,22 @@
+{
+  "name": "gamepad-events",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omiinaya/gamepad-events.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/omiinaya/gamepad-events/issues"
+  },
+  "homepage": "https://github.com/omiinaya/gamepad-events#readme",
+  "dependencies": {
+    "vgen-xbox": "^1.0.1"
+  }
+}
