@@ -1,31 +1,44 @@
 const VGen = require("vgen-xbox")
+const ioHook = require('iohook');
 const _vgen = new VGen();
 
 try {
     // Try plugging in first controller
     _vgen.plugin(1);
-    startDemo();
+    main();
 }
 catch (e) {
     // Exception most probably due to drivers not installed
     _vgen.installDriver(() => {
         _vgen.plugin(1);
-        startDemo();
+        main();
     });
 }
 
-function startDemo() {
-    console.log("starting demo");
-    rLeft(0);
+function main() {
+    console.log("Ready");
+    ioHook.start();
+    //left = 37
+    //up = 38
+    //right = 39
+    //down = 40
+    ioHook.on('keydown', function (event) {
+        console.log(event);
+    });
+    //rLeft(0);
     rRight(0);
-    buttons(0);
-    dpad(0);
+    //buttons(0);
+    //dpad(0);
+}
+
+function listener() {
+
 }
 
 function rLeft(x) {
     _vgen.setAxisL(1, Math.sin(x), Math.cos(x));
-    
-    setTimeout(function() {
+
+    setTimeout(function () {
         rLeft(x + 0.1);
     }, 100);
 }
@@ -33,7 +46,7 @@ function rLeft(x) {
 function rRight(x) {
     _vgen.setAxisR(1, Math.sin(x), Math.cos(x));
 
-    setTimeout(function() {
+    setTimeout(function () {
         rRight(x + 0.1);
     }, 100);
 }
@@ -49,11 +62,11 @@ function dpad(x) {
     arr[6] = _vgen.Dpad.DOWN_LEFT;
     arr[7] = _vgen.Dpad.LEFT;
     arr[8] = _vgen.Dpad.UP_LEFT;
-    arr[9] = _vgen.Dpad.UP;    
+    arr[9] = _vgen.Dpad.UP;
 
     _vgen.setDpad(1, arr[x]);
 
-    setTimeout(function() {
+    setTimeout(function () {
         dpad((x + 1) % arr.length);
     }, 250);
 }
@@ -71,14 +84,14 @@ function buttons(x) {
     arr[8] = _vgen.Buttons.LEFT_THUMB;
     arr[9] = _vgen.Buttons.RIGHT_THUMB;
 
-    _vgen.setButton(1, arr[0] | arr[1] 
-        | arr[2] | arr[3] 
-        | arr[4] | arr[5] 
-        | arr[6] | arr[7] 
+    _vgen.setButton(1, arr[0] | arr[1]
+        | arr[2] | arr[3]
+        | arr[4] | arr[5]
+        | arr[6] | arr[7]
         | arr[8] | arr[9], false);
     _vgen.setButton(1, arr[x], true);
 
-    setTimeout(function() {
+    setTimeout(function () {
         buttons((x + 1) % arr.length);
     }, 250);
 }
