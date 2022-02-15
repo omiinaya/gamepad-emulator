@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/omiinaya/gamepad-events#readme",
   "dependencies": {
+    "iohook": "^0.7.0",
     "vgen-xbox": "^1.0.1"
   }
 }
