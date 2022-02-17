@@ -1,4 +1,3 @@
 DEPENDENCIES:
 
-1. Node 8.7.0
-2. NPM 5.4.2
+1. Node: v12.22.10

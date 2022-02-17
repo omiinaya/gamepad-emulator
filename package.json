@@ -1,5 +1,5 @@
 {
-  "name": "gamepad-events",
+  "name": "gamepad-new",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,18 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/omiinaya/gamepad-events.git"
-  },
   "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/omiinaya/gamepad-events/issues"
-  },
-  "homepage": "https://github.com/omiinaya/gamepad-events#readme",
+  "license": "",
   "dependencies": {
-    "iohook": "^0.7.0",
-    "vgen-xbox": "^1.0.1"
+    "iohook": "^0.7.2",
+    "vigemclient": "^1.3.0"
   }
 }
