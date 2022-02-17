@@ -28,30 +28,18 @@ function main() {
         if (event.rawcode == 46) {
             active = !active
             Listener()
-        } else if (event.rawcode == 37) { //left
-            if (!keys.includes(event.rawcode)) {
-                keys = [...keys, event.rawcode]
-                console.log(keys)
-            }
-        } else if (event.rawcode == 38) { //up
-            if (!keys.includes(event.rawcode)) {
-                keys = [...keys, event.rawcode]
-                console.log(keys)
-            }
-        } else if (event.rawcode == 39) { //right
-            if (!keys.includes(event.rawcode)) {
-                keys = [...keys, event.rawcode]
-                console.log(keys)
-            }
-        } else if (event.rawcode == 40) { //down
-            if (!keys.includes(event.rawcode)) {
-                keys = [...keys, event.rawcode]
-                console.log(keys)
-            }
-        } else if (event.rawcode == 35) { //end
+        }
+
+        if (event.rawcode == 35) { //end
             process.exit(0)
         }
+
+        if (!keys.includes(event.rawcode)) {
+            keys = [...keys, event.rawcode]
+            console.log(keys)
+        }
     })
+    
     ioHook.on('keyup', function (event) {
         //removes keys from array on keyup
         var newKeys = keys.filter(e => e !== event.rawcode)
@@ -66,7 +54,7 @@ function main() {
 function Listener() {
     if (active) {
         clearTimeout(leftTimeout)
-        //_vgen.setAxisL(1, 0.0, 0.0)
+        _vgen.setAxisL(1, 0.0, 0.0)
     } else {
         rLeft()
     }
@@ -75,7 +63,7 @@ function Listener() {
 function rLeft() {
     console.log(keys)
     //analog
-    if (keys.length === 1 && keys[0] === 37) _vgen.setAxisL(1, -1.0, 0.0) //left
+    if (keys.includes(37)) _vgen.setAxisL(1, -1.0, 0.0) //left
     if (keys.length === 1 && keys[0] === 38) _vgen.setAxisL(1, 0.0, 1.0) //up
     if (keys.length === 1 && keys[0] === 39) _vgen.setAxisL(1, 1.0, 0.0) //right
     if (keys.length === 1 && keys[0] === 40) _vgen.setAxisL(1, 0.0, -1.0) //down
@@ -84,7 +72,7 @@ function rLeft() {
     if (keys.includes(38) && keys.includes(37)) _vgen.setAxisL(1, -1.0, 1.0) //upleft
     if (keys.includes(40) && keys.includes(39)) _vgen.setAxisL(1, 1.0, -1.0) //downright
     if (keys.includes(40) && keys.includes(37)) _vgen.setAxisL(1, -1.0, -1.0) //downleft
-    
+
     leftTimeout = setTimeout(function () {
         rLeft();
     }, 100);
@@ -103,7 +91,7 @@ function rRight(x) {
 
 function dpad(x) {
     var arr = [];
-    arr[0] = _vgen.Dpad.NONE;
+    arr[0] = _vgens.Dpad.NONE;
     arr[1] = _vgen.Dpad.UP;
     arr[2] = _vgen.Dpad.UP_RIGHT;
     arr[3] = _vgen.Dpad.RIGHT;
