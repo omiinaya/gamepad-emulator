@@ -1,6 +1,8 @@
 const VGen = require("vgen-xbox")
 const ioHook = require('iohook');
-const _vgen = new VGen();
+const _vgen = new VGen()
+
+let keys = []
 
 try {
     // Try plugging in first controller
@@ -16,16 +18,33 @@ catch (e) {
 }
 
 let active = true;
-let rightTimeout;
 let leftTimeout;
 
 function main() {
-    console.log("Ready");
+    console.log("Ready")
     ioHook.start();
     ioHook.on('keydown', function (event) {
-        if (event.rawcode != 46) return
-        active = !active
-        Listener()
+        //add keys to key array on down
+        if (event.rawcode == 46) {
+            active = !active
+            Listener()
+        } else if (event.rawcode == 38) { //up
+            if (!keys.includes(event.rawcode)) {
+                keys = [...keys, event.rawcode]
+                console.log(keys)
+            }
+        } else if (event.rawcode == 39) { //right
+            if (!keys.includes(event.rawcode)) {
+                keys = [...keys, event.rawcode]
+                console.log(keys)
+            }
+        }
+    })
+    ioHook.on('keyup', function (event) {
+        //removes keys from array on keyup
+        var newKeys = keys.filter(e => e !== event.rawcode)
+        keys = newKeys
+        console.log(newKeys)
     })
 }
 
@@ -39,14 +58,14 @@ function Listener() {
 }
 
 function rLeft(direction) {
-    if (direction === 'up')         return _vgen.setAxisL(1, 0.0, 1.0)
-    if (direction === 'upright')    return _vgen.setAxisL(1, 1.0, 1.0)
-    if (direction === 'upleft')    return _vgen.setAxisL(1, -1.0, 1.0)
-    if (direction === 'right')      return _vgen.setAxisL(1, 1.0, 0.0)
-    if (direction === 'down')       return _vgen.setAxisL(1, 0.0, -1.0)
-    if (direction === 'downright')  return _vgen.setAxisL(1, 1.0, -1.0)
-    if (direction === 'downleft')    return _vgen.setAxisL(1, -1.0, -1.0)
-    if (direction === 'left')       return _vgen.setAxisL(1, -1.0, 0.0)
+    if (direction === 'up') return _vgen.setAxisL(1, 0.0, 1.0)
+    if (direction === 'upright') return _vgen.setAxisL(1, 1.0, 1.0)
+    if (direction === 'upleft') return _vgen.setAxisL(1, -1.0, 1.0)
+    if (direction === 'right') return _vgen.setAxisL(1, 1.0, 0.0)
+    if (direction === 'down') return _vgen.setAxisL(1, 0.0, -1.0)
+    if (direction === 'downright') return _vgen.setAxisL(1, 1.0, -1.0)
+    if (direction === 'downleft') return _vgen.setAxisL(1, -1.0, -1.0)
+    if (direction === 'left') return _vgen.setAxisL(1, -1.0, 0.0)
 
     leftTimeout = setTimeout(function () {
         rLeft();
