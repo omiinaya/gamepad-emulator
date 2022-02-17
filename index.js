@@ -32,6 +32,7 @@ function main() {
 function Listener() {
     if (active) {
         clearTimeout(leftTimeout)
+        _vgen.setAxisL(1, 0.0, 0.0)
         return
     }
     rLeft('downleft')
