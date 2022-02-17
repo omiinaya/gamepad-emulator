@@ -2,15 +2,14 @@ const VGen = require("vgen-xbox")
 const ioHook = require('iohook');
 const _vgen = new VGen()
 
-let keys = []
+let keys = [] //stores keys held
 
 try {
-    // Try plugging in first controller
+    //plugging in first controller
     _vgen.plugin(1);
     main();
-}
-catch (e) {
-    // Exception most probably due to drivers not installed
+} catch (e) {
+    //install drivers if not installed
     _vgen.installDriver(() => {
         _vgen.plugin(1);
         main();
@@ -44,10 +43,10 @@ function main() {
         //removes keys from array on keyup
         var newKeys = keys.filter(e => e !== event.rawcode)
         keys = newKeys
+        //reset pos if no keys are held
         if (keys.length === 0) {
             _vgen.setAxisL(1, 0.0, 0.0)
         }
-        //console.log(newKeys)
     })
 }
 
