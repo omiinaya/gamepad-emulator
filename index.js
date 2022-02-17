@@ -82,20 +82,14 @@ function rLeft() {
     //diagonal
     if (keys.includes(38) && keys.includes(39)) _vgen.setAxisL(1, 1.0, 1.0) //up+right
     if (keys.includes(38) && keys.includes(37)) _vgen.setAxisL(1, -1.0, 1.0) //upleft
-    /*
+    if (keys.includes(40) && keys.includes(39)) _vgen.setAxisL(1, 1.0, -1.0) //downright
+    if (keys.includes(40) && keys.includes(37)) _vgen.setAxisL(1, -1.0, -1.0) //downleft
     
-    if (direction === 'upleft') return _vgen.setAxisL(1, -1.0, 1.0)
-    
-    if (direction === 'down') return _vgen.setAxisL(1, 0.0, -1.0)
-    if (direction === 'downright') return _vgen.setAxisL(1, 1.0, -1.0)
-    if (direction === 'downleft') return _vgen.setAxisL(1, -1.0, -1.0)
-    if (direction === 37) return _vgen.setAxisL(1, -1.0, 0.0)
-    */
     leftTimeout = setTimeout(function () {
         rLeft();
     }, 100);
 }
-
+/*
 function rRight(x) {
     let test = [Math.sin(x), Math.cos(x)]
     _vgen.setAxisR(1, test[0], test[1]);
@@ -151,3 +145,4 @@ function buttons(x) {
         buttons((x + 1) % arr.length);
     }, 250);
 }
+*/
