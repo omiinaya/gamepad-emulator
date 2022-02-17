@@ -28,6 +28,11 @@ function main() {
         if (event.rawcode == 46) {
             active = !active
             Listener()
+        } else if (event.rawcode == 37) { //left
+            if (!keys.includes(event.rawcode)) {
+                keys = [...keys, event.rawcode]
+                console.log(keys)
+            }
         } else if (event.rawcode == 38) { //up
             if (!keys.includes(event.rawcode)) {
                 keys = [...keys, event.rawcode]
@@ -38,35 +43,54 @@ function main() {
                 keys = [...keys, event.rawcode]
                 console.log(keys)
             }
+        } else if (event.rawcode == 40) { //down
+            if (!keys.includes(event.rawcode)) {
+                keys = [...keys, event.rawcode]
+                console.log(keys)
+            }
+        } else if (event.rawcode == 35) { //end
+            process.exit(0)
         }
     })
     ioHook.on('keyup', function (event) {
         //removes keys from array on keyup
         var newKeys = keys.filter(e => e !== event.rawcode)
         keys = newKeys
-        console.log(newKeys)
+        if (keys.length === 0) {
+            _vgen.setAxisL(1, 0.0, 0.0)
+        }
+        //console.log(newKeys)
     })
 }
 
 function Listener() {
     if (active) {
         clearTimeout(leftTimeout)
-        _vgen.setAxisL(1, 0.0, 0.0)
-        return
+        //_vgen.setAxisL(1, 0.0, 0.0)
+    } else {
+        rLeft()
     }
-    rLeft('downleft')
 }
 
-function rLeft(direction) {
-    if (direction === 'up') return _vgen.setAxisL(1, 0.0, 1.0)
-    if (direction === 'upright') return _vgen.setAxisL(1, 1.0, 1.0)
+function rLeft() {
+    console.log(keys)
+    //analog
+    if (keys.length === 1 && keys[0] === 37) _vgen.setAxisL(1, -1.0, 0.0) //left
+    if (keys.length === 1 && keys[0] === 38) _vgen.setAxisL(1, 0.0, 1.0) //up
+    if (keys.length === 1 && keys[0] === 39) _vgen.setAxisL(1, 1.0, 0.0) //right
+    if (keys.length === 1 && keys[0] === 40) _vgen.setAxisL(1, 0.0, -1.0) //down
+    //diagonal
+    if (keys.includes(38) && keys.includes(39)) _vgen.setAxisL(1, 1.0, 1.0) //up+right
+    if (keys.includes(38) && keys.includes(37)) _vgen.setAxisL(1, -1.0, 1.0) //upleft
+    /*
+    
     if (direction === 'upleft') return _vgen.setAxisL(1, -1.0, 1.0)
-    if (direction === 'right') return _vgen.setAxisL(1, 1.0, 0.0)
+    
     if (direction === 'down') return _vgen.setAxisL(1, 0.0, -1.0)
     if (direction === 'downright') return _vgen.setAxisL(1, 1.0, -1.0)
     if (direction === 'downleft') return _vgen.setAxisL(1, -1.0, -1.0)
-    if (direction === 'left') return _vgen.setAxisL(1, -1.0, 0.0)
-
+    if (direction === 37) return _vgen.setAxisL(1, -1.0, 0.0)
+    */
     leftTimeout = setTimeout(function () {
         rLeft();
     }, 100);
