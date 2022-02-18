@@ -131,3 +131,7 @@ function isAdmin() {
 app.on('ready', () => {
   isAdmin()
 })
+
+app.on('window-all-closed', () => {
+  app.quit()
+})
