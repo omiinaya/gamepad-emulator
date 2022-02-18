@@ -2,28 +2,27 @@ const ViGEmClient = require('vigemclient');
 const ioHook = require('iohook');
 
 let client = new ViGEmClient()
-client.connect(); // establish connection to the ViGEmBus driver
+client.connect()
 let controller = client.createX360Controller()
-controller.connect(); // plug in the virtual controller
+controller.connect()
 
-let keys = [], active = false, leftTimeout; //stores keys held
+let active = false 
+let keys = [] //array of keys currently being held
+let leftTimeout //stores keys held
+let result = keys.some(i => [37, 38, 39, 40].includes(i)); //check if arrow keys are being pressed or not.
 
-main()
+ioHook.start()
 
-function main() {
-    console.log("Ready")
-    ioHook.start()
-    ioHook.on('keydown', function (event) {
-        if (event.rawcode == 46) return onStart()
-        if (event.rawcode == 35) return process.exit(0)
-        if (!keys.includes(event.rawcode)) keys = [...keys, event.rawcode]
-    })
+ioHook.on('keydown', function (event) {
+    if (event.rawcode == 46) return onStart()
+    if (event.rawcode == 35) return process.exit(0)
+    if (!keys.includes(event.rawcode)) keys = [...keys, event.rawcode]
+})
 
-    ioHook.on('keyup', function (event) {
-        keys = keys.filter(e => e !== event.rawcode)
-        if (keys.length === 0) handleMoveLeftPad(0, 0)
-    })
-}
+ioHook.on('keyup', function (event) {
+    keys = keys.filter(e => e !== event.rawcode)
+    if (!result) handleMoveLeftPad(0, 0) //reset pos if not pressing any keys
+})
 
 function Listener() {
     console.log(keys)
