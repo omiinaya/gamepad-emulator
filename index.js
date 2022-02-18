@@ -6,7 +6,7 @@ client.connect()
 let controller = client.createX360Controller()
 controller.connect()
 
-let active = false 
+let active = false
 let keys = [] //array of keys currently being held
 let leftTimeout //stores keys held
 let result = keys.some(i => [37, 38, 39, 40].includes(i)); //check if arrow keys are being pressed or not.
