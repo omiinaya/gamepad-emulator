@@ -6,3 +6,5 @@ Currently turns your arrow keys into the left stick of an Xbox 360 controller.
 1. Open the executable.
 2. Press DELETE.
 3. Test using https://devicetests.com/controller-tester.
+
+Press END to exit the script.
