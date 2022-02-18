@@ -1,7 +1,9 @@
-const { app } = require('electron')
+const { app, BrowserWindow } = require('electron')
+const path = require('path')
 const ViGEmClient = require('vigemclient');
 const ioHook = require('iohook');
-const exec = require('@mh-cbon/aghfabsowecwn').exec
+const { exec, execSync } = require('child_process')
+fs = require('fs')
 
 let client;
 let controller;
@@ -10,15 +12,41 @@ let keys = [] //array of keys currently being held
 let leftTimeout //stores keys held
 let result = keys.some(i => [37, 38, 39, 40].includes(i)); //check if arrow keys are being pressed or not.
 
-function Start() {
+let window;
+
+const createWindow = () => {
+  const mainWindow = new BrowserWindow({
+    show: false,
+    width: 400,
+    height: 250,
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true
+    }
+  });
+  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+
+  window = mainWindow
+
+  mainWindow.webContents.on('did-finish-load', function () {
+    mainWindow.show();
+    start()
+  });
+};
+
+function start() {
   try {
-    Main()
+    main()
   } catch (err) {
     onDriverNotFound()
   }
 }
 
-function Main() {
+function print(a) {
+  window.webContents.send('LOG_REQUEST', a);
+}
+
+function main() {
   client = new ViGEmClient()
   client.connect()
   controller = client.createX360Controller()
@@ -36,11 +64,11 @@ function Main() {
     keys = keys.filter(e => e !== event.rawcode)
     if (!result) handleMoveLeftPad(0, 0) //reset pos if not pressing any keys
   })
-  console.log("Ready")
+  print("Ready")
 }
 
-function Listener() {
-  console.log(keys)
+function listen() {
+  print(keys)
   if (keys.includes(37)) handleMoveLeftPad(-1, 0) //left
   if (keys.includes(38)) handleMoveLeftPad(0, 1) //up
   if (keys.includes(39)) handleMoveLeftPad(1, 0) //right
@@ -51,7 +79,7 @@ function Listener() {
   if (keys.includes(40) && keys.includes(37)) handleMoveLeftPad(-1, -1) //downleft
 
   leftTimeout = setTimeout(function () {
-    Listener();
+    listen();
   }, 100);
 }
 
@@ -68,21 +96,38 @@ function onExit() {
 function onEnabled() {
   active = !active
   if (!active) return onExit()
-  return Listener()
+  return listen()
 }
 
+const getExtraFilesPath = () => {
+  var x = path.join(process.resourcesPath, '..')
+  var y = path.join(x, '/extraResources')
+  return y;
+};
+
 function onDriverNotFound() {
-  console.log("Driver is not installed.")
-  console.log("Installing driver.")
+  print("Driver is not installed.")
+  print("Installing driver.")
 
-  let child = exec('msiexec /i ViGEmBusSetup_x64.msi /q /qn /norestart', { cwd: './drivers' })
+  exec(`cd ${getExtraFilesPath()} && msiexec /i ViGEmBusSetup_x64.msi /q /qn /norestart`, (error, stdout, stderr) => {
+    if (error) print(error)
+    if (stdout) print(stdout)
+    if (stderr) print(stderr)
+  }).on('exit', code => {
+    print('final exit code is', code)
+    main()
+  })
+}
 
-  child.on('exit', function (code) {
-    console.log(code)
-    Main()
-  });
+function isAdmin() {
+  try {
+    execSync('NET SESSION').toString()
+    createWindow()
+  } catch {
+    throw new Error('This application requires Administrator priviledges.');
+  }
 }
 
 app.on('ready', () => {
-  Start()
-});
+  isAdmin()
+})

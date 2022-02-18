@@ -14,14 +14,12 @@
   "author": "Omar Minaya",
   "license": "",
   "dependencies": {
-    "vigemclient": "^1.3.0",
     "iohook": "^0.9.3",
-    "@mh-cbon/aghfabsowecwn": "^2.0.4"
+    "vigemclient": "^1.3.0"
   },
   "devDependencies": {
     "electron": "^11.3.0",
-    "electron-builder": "22.4.0",
-    "electron-rebuild": "^2.3.5"
+    "electron-builder": "22.4.0"
   },
   "iohook": {
     "arches": [
@@ -33,5 +31,14 @@
     "targets": [
       "electron-85"
     ]
+  },
+  "build": {
+    "asar": true,
+    "extraFiles": [
+      "extraResources"
+    ],
+    "directories": {
+      "buildResources": "resources"
+    }
   }
 }
