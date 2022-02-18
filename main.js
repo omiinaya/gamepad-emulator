@@ -10,17 +10,24 @@ let keys = [] //array of keys currently being held
 let leftTimeout //stores keys held
 let result = keys.some(i => [37, 38, 39, 40].includes(i)); //check if arrow keys are being pressed or not.
 
-function Init() {
+function Start() {
+  try {
+    Main()
+  } catch (err) {
+    onDriverNotFound()
+  }
+}
+
+function Main() {
   client = new ViGEmClient()
   client.connect()
   controller = client.createX360Controller()
   controller.connect()
-}
 
-function Main() {
   ioHook.start()
+
   ioHook.on('keydown', function (event) {
-    if (event.rawcode == 46) return onStart()
+    if (event.rawcode == 46) return onEnabled()
     if (event.rawcode == 35) return process.exit(0)
     if (!keys.includes(event.rawcode)) keys = [...keys, event.rawcode]
   })
@@ -58,7 +65,7 @@ function onExit() {
   handleMoveLeftPad(0, 0)
 }
 
-function onStart() {
+function onEnabled() {
   active = !active
   if (!active) return onExit()
   return Listener()
@@ -72,23 +79,10 @@ function onDriverNotFound() {
 
   child.on('exit', function (code) {
     console.log(code)
-    Init()
     Main()
   });
-
-  child.on('error', function (error) {
-    console.log('===> child error=%s', error)
-    console.log('===> child error=%j', error)
-    if (error.code === 'ECONNREFUSED') console.log('UAC was probably not validated.')
-  })
 }
 
 app.on('ready', () => {
-  try {
-    Init()
-    Main()
-  } catch (err) {
-    console.log(err)
-    onDriverNotFound()
-  }
+  Start()
 });
