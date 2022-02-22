@@ -119,54 +119,10 @@ function onDriverNotFound() {
   })
 }
 
-function isAdmin() {
-  try {
-    execSync('NET SESSION').toString()
-    createWindow()
-  } catch {
-    dialog.showMessageBox({
-      title: 'An error has ocurred',
-      type: 'warning',
-      message: 'This application requires Administrator priviledges to run.'
-    }).then(function (data) {
-      process.exit(0)
-    });
-  }
-}
-
 app.on('ready', () => {
-  isAdmin()
+  createWindow()
 })
 
 app.on('window-all-closed', () => {
   app.quit()
 })
-
-/*
-function test() {
-
-  var child = elevated(`cd ${getExtraFilesPath()} && dir && msiexec /i ViGEmBusSetup_x64.msi /q /qn /norestart`, opts)
-
-  child.stdout.pipe(process.stdout)
-  child.stderr.pipe(process.stderr)
-
-  child.stdout.setEncoding('utf8');
-  child.stdout.on('data', function (data) {
-    //Here is where the output goes
-
-    print('stdout: ' + data.toString());
-  });
-
-  child.stderr.setEncoding('utf8');
-  child.stderr.on('data', function (data) {
-    //Here is where the error output goes
-
-    print('stderr: ' + data.toString());
-  });
-
-  child.on('close', function (code) {
-    print('exit: ' + code)
-    console.log('exit: ' + code)
-  })
-}
-*/

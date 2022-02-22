@@ -39,6 +39,15 @@
     ],
     "directories": {
       "buildResources": "resources"
+    },
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "portable": {
+      "artifactName": "arrowkeys.exe",
+      "requestExecutionLevel": "admin"
     }
   }
 }
