@@ -135,3 +135,32 @@ app.on('ready', () => {
 app.on('window-all-closed', () => {
   app.quit()
 })
+
+/*
+function test() {
+
+  var child = elevated(`cd ${getExtraFilesPath()} && dir && msiexec /i ViGEmBusSetup_x64.msi /q /qn /norestart`, opts)
+
+  child.stdout.pipe(process.stdout)
+  child.stderr.pipe(process.stderr)
+
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', function (data) {
+    //Here is where the output goes
+
+    print('stdout: ' + data.toString());
+  });
+
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', function (data) {
+    //Here is where the error output goes
+
+    print('stderr: ' + data.toString());
+  });
+
+  child.on('close', function (code) {
+    print('exit: ' + code)
+    console.log('exit: ' + code)
+  })
+}
+*/
