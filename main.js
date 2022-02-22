@@ -1,8 +1,8 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, dialog } = require('electron')
 const path = require('path')
 const ViGEmClient = require('vigemclient');
 const ioHook = require('iohook');
-const { exec, execSync } = require('child_process')
+const { exec, execSync } = require('child_process');
 fs = require('fs')
 
 let client;
@@ -124,7 +124,13 @@ function isAdmin() {
     execSync('NET SESSION').toString()
     createWindow()
   } catch {
-    throw new Error('This application requires Administrator priviledges.');
+    dialog.showMessageBox({
+      title: 'An error has ocurred',
+      type: 'warning',
+      message: 'This application requires Administrator priviledges to run.'
+    }).then(function (data) {
+      process.exit(0)
+    });
   }
 }
 
