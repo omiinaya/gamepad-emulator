@@ -22,6 +22,7 @@ build/Release
 dist 
 
 # Dependency directories
+node_modules/
 jspm_packages/
 test-win32-x64/
 discord-prio-fix-win32-x64/
