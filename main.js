@@ -10,7 +10,10 @@ let controller;
 let active = false
 let keys = [] //array of keys currently being held
 let leftTimeout //stores keys held
-let result = keys.some(i => [37, 38, 39, 40].includes(i)); //check if arrow keys are being pressed or not.
+const result = () => { 
+  var x = keys.some(i => [37, 38, 39, 40].includes(i))
+  return x
+}  //check if arrow keys are being pressed or not.
 
 let window;
 
@@ -62,7 +65,7 @@ function main() {
 
   ioHook.on('keyup', function (event) {
     keys = keys.filter(e => e !== event.rawcode)
-    if (!result) handleMoveLeftPad(0, 0) //reset pos if not pressing any keys
+    if (!result()) handleMoveLeftPad(0, 0) //reset pos if not pressing any keys
   })
   print("Ready")
 }
