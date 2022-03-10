@@ -8,7 +8,7 @@
     "client": "electron .",
     "start": "electron .",
     "build": "electron-builder --win portable",
-    "rebuild": "electron-rebuild -f -w main.js"
+    "postinstall": "electron-builder install-app-deps"
   },
   "repository": "https://github.com/omiinaya/system-tools",
   "author": "Omar Minaya",
@@ -18,8 +18,8 @@
     "vigemclient": "^1.3.0"
   },
   "devDependencies": {
-    "electron": "^11.3.0",
-    "electron-builder": "22.4.0"
+    "electron": "^17.1.1",
+    "electron-builder": "^22.14.13"
   },
   "iohook": {
     "arches": [
@@ -29,7 +29,7 @@
       "win32"
     ],
     "targets": [
-      "electron-85"
+      "electron-101"
     ]
   },
   "build": {
