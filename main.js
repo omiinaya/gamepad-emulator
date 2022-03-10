@@ -33,6 +33,15 @@ const createWindow = () => {
     mainWindow.show();
     start()
   });
+
+  mainWindow.on('close', function (event) {
+    if (!app.isQuiting) {
+      event.preventDefault();
+      mainWindow.hide();
+    }
+
+    return false;
+  });
 };
 
 function start() {
@@ -139,11 +148,18 @@ app.whenReady().then(() => {
   const iconPath = path.join(__dirname, 'assets', 'favicon.ico')
   tray = new Tray(iconPath);
 
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'Exit', 'click': app.quit }
-  ]);
+  const contextMenu = Menu.buildFromTemplate([{
+      label: 'Exit', click: () => {
+        app.isQuiting = true;
+        app.quit();
+      }
+    }]);
 
   tray.setToolTip('Gamepad Emulator');
   tray.setContextMenu(contextMenu);
+  tray.on('click', () => {
+    window.show();
+    window.setAlwaysOnTop(true);
+  });
 
 });
