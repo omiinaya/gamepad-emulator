@@ -1,14 +1,15 @@
-const { app, BrowserWindow, dialog } = require('electron')
-const path = require('path')
+const { app, BrowserWindow, Menu, Tray } = require('electron')
 const ViGEmClient = require('vigemclient');
-const ioHook = require('iohook');
 const { exec } = require('child_process');
+const ioHook = require('iohook');
+const path = require('path');
 
 let client;
 let controller;
+let leftTimeout;
+
+let keys = []
 let active = false
-let keys = [] //array of keys currently being held
-let leftTimeout
 const arrows = [37, 38, 39, 40]
 const result = () => keys.some(key => arrows.includes(key))
 
@@ -132,3 +133,17 @@ app.on('will-quit', () => {
   clearTimeout(leftTimeout)
   ioHook.stop()
 })
+
+app.whenReady().then(() => {
+
+  const iconPath = path.join(__dirname, 'assets', 'favicon.ico')
+  tray = new Tray(iconPath);
+
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'Exit', 'click': app.quit }
+  ]);
+
+  tray.setToolTip('Gamepad Emulator');
+  tray.setContextMenu(contextMenu);
+
+});
