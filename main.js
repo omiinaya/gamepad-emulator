@@ -7,6 +7,7 @@ const path = require('path');
 let client;
 let controller;
 let leftTimeout;
+let isVisible;
 
 let keys = []
 let active = false
@@ -42,6 +43,14 @@ const createWindow = () => {
 
     return false;
   });
+
+  mainWindow.on('show', () => {
+    isVisible = true
+  })
+
+  mainWindow.on('hide', () => {
+    isVisible = false
+  })
 };
 
 function start() {
@@ -63,7 +72,6 @@ function main() {
   controller.connect()
 
   ioHook.start()
-
   ioHook.on('keydown', function (event) {
     if (event.rawcode == 46) return onEnabled()
     if (event.rawcode == 35) return process.exit(0)
@@ -74,11 +82,11 @@ function main() {
     keys = keys.filter(e => e !== event.rawcode)
     if (!result()) handleMoveLeftPad(0, 0)
   })
+
   print("Ready")
 }
 
 function listen() {
-  print(keys)
   if (keys.includes(37)) handleMoveLeftPad(-1, 0) //left
   if (keys.includes(38)) handleMoveLeftPad(0, 1) //up
   if (keys.includes(39)) handleMoveLeftPad(1, 0) //right
@@ -87,6 +95,8 @@ function listen() {
   if (keys.includes(38) && keys.includes(37)) handleMoveLeftPad(-1, 1) //upleft
   if (keys.includes(40) && keys.includes(39)) handleMoveLeftPad(1, -1) //downright
   if (keys.includes(40) && keys.includes(37)) handleMoveLeftPad(-1, -1) //downleft
+
+  print(keys)
 
   leftTimeout = setTimeout(function () {
     listen();
@@ -130,36 +140,32 @@ function onDriverNotFound() {
   })
 }
 
-app.on('ready', () => {
-  createWindow()
-})
-
-app.on('window-all-closed', () => {
-  app.quit()
-})
-
-app.on('will-quit', () => {
+function willQuit() {
   clearTimeout(leftTimeout)
   ioHook.stop()
-})
+}
 
+app.on('ready', () => createWindow())
+app.on('window-all-closed', () => app.quit())
+app.on('will-quit', () => willQuit())
 app.whenReady().then(() => {
-
   const iconPath = path.join(__dirname, 'assets', 'favicon.ico')
   tray = new Tray(iconPath);
-
-  const contextMenu = Menu.buildFromTemplate([{
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show', click: () => {
+        window.show();
+      },
+    }, {
       label: 'Exit', click: () => {
         app.isQuiting = true;
         app.quit();
       }
-    }]);
+    }
+  ]);
 
   tray.setToolTip('Gamepad Emulator');
   tray.setContextMenu(contextMenu);
-  tray.on('click', () => {
-    window.show();
-    window.setAlwaysOnTop(true);
-  });
-
+  tray.on('right-click', () => tray.popUpContextMenu())
+  tray.on('click', () => window.show());
 });
