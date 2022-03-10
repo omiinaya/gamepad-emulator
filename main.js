@@ -17,11 +17,11 @@ let window;
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
     show: false,
-    width: 400,
-    height: 250,
+    width: 500,
+    height: 350,
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true
+      contextIsolation: false
     }
   });
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
@@ -95,6 +95,7 @@ function onExit() {
 
 function onEnabled() {
   active = !active
+  window.webContents.send('STATUS_UPDATE', active);
   if (!active) return onExit()
   return listen()
 }
