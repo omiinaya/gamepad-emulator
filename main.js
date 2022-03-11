@@ -1,3 +1,7 @@
+try {
+  require('electron-reloader')(module)
+} catch (_) {}
+
 const { app, BrowserWindow, Menu, Tray } = require('electron')
 const ViGEmClient = require('vigemclient');
 const { exec } = require('child_process');
@@ -21,6 +25,7 @@ const createWindow = () => {
     show: false,
     width: 500,
     height: 350,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
@@ -149,7 +154,7 @@ app.on('ready', () => createWindow())
 app.on('window-all-closed', () => app.quit())
 app.on('will-quit', () => willQuit())
 app.whenReady().then(() => {
-  const iconPath = path.join(__dirname, 'assets', 'favicon.ico')
+  const iconPath = path.join(__dirname, 'build', 'icon.ico')
   tray = new Tray(iconPath);
   const contextMenu = Menu.buildFromTemplate([
     {

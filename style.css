@@ -304,6 +304,12 @@ html {
   align-items: center;
 }
 
+#wrapper {
+  height: inherit;
+  width: inherit;
+  display: flex;
+}
+
 h1 {
   margin: 2vw 0 10px;
   font-size: 2.6vw;

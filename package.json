@@ -19,7 +19,8 @@
   },
   "devDependencies": {
     "electron": "^17.1.1",
-    "electron-builder": "^22.14.13"
+    "electron-builder": "^22.14.13",
+    "electron-reloader": "^1.2.3"
   },
   "iohook": {
     "arches": [
@@ -37,13 +38,11 @@
     "extraFiles": [
       "extraResources"
     ],
-    "directories": {
-      "buildResources": "resources"
-    },
     "win": {
       "target": [
         "portable"
-      ]
+      ],
+      "icon": "./build/favicon.ico"
     },
     "portable": {
       "artifactName": "arrowkeys.exe",
