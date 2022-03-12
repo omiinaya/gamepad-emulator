@@ -16,10 +16,11 @@ let client;
 let mouse;
 let controller;
 let leftTimeout;
+let mouseTimeout;
 let isVisible;
 let keys = []
-let active = false
-const arrows = [37, 38, 39, 40]
+let active = false;
+const arrows = [37, 38, 39, 40];
 
 const result = () => keys.some(key => arrows.includes(key))
 const print = (a) => window.webContents.send('LOG_REQUEST', a);
@@ -91,10 +92,18 @@ function main() {
   ioHook.start()
   ioHook.on('keydown', (event) => handleKeyUp(event))
   ioHook.on('keyup', (event) => handleKeyDown(event))
-  ipcMain.on('mouse', (event, data) => {
-    mouse = data
-    handleMouseEvents()
-  })
+  globalShortcut.register('CmdOrCtrl + H', () => {
+    if (mouseTimeout) {
+      ipcMain.removeAllListeners('mouse');
+      clearTimeout(mouseTimeout);
+      mouseTimeout = undefined;
+    } else {
+      ipcMain.on('mouse', (event, data) => {
+        mouse = data;
+        handleMouseEvents();
+      })
+    }
+  });
 }
 
 function handleKeyUp(event) {
@@ -129,34 +138,34 @@ function handleMoveLeftPad(x, y) {
 
 function handleMouseEvents() {
   var tmp_glob = mouse
-  setTimeout(function () {
+  mouseTimeout = setTimeout(function () {
+    console.log(mouse)
     if (tmp_glob == mouse) {
       controller.axis.rightX.setValue(0)
       controller.axis.rightY.setValue(0)
-      return console.log("The value hasn't changed");
+      return //console.log("The value hasn't changed");
     }
-    
+
     if (mouse.pointerX === "left" && mouse.pointerY === "none") {
       controller.axis.rightX.setValue(-1);
       controller.axis.rightY.setValue(0)
-      console.log('left')
+      //console.log('left')
     }
     if (mouse.pointerY === "up" && mouse.pointerX === "none") {
       controller.axis.rightX.setValue(0);
       controller.axis.rightY.setValue(1);
-      console.log('up')
+      //console.log('up')
     }
     if (mouse.pointerX === "right" && mouse.pointerY === "none") {
       controller.axis.rightX.setValue(1);
       controller.axis.rightY.setValue(0);
-      console.log('right')
+      //console.log('right')
     }
     if (mouse.pointerY === "down" && mouse.pointerX === "none") {
       controller.axis.rightX.setValue(0);
       controller.axis.rightY.setValue(-1);
-      console.log('down')
+      //console.log('down')
     }
-    return console.log("The value has changed");
   }, 100);
 }
 

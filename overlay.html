@@ -19,7 +19,9 @@
                 pointerX: mouseMovement.directionX,
                 pointerY: mouseMovement.directionY,
                 speedX: mouseMovement.speedX,
-                speedY: mouseMovement.speedY
+                speedY: mouseMovement.speedY,
+                //oldX: mouseMovement.oldX,
+                //oldY: mouseMovement.oldY
             }
             ipc.send('mouse', data)
         }
