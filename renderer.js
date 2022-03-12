@@ -1,5 +1,16 @@
 const electron = require('electron')
 const ipc = electron.ipcRenderer
+const MouseMovement = require('mouse-movement')
+
+const mouseMovement = new MouseMovement();
+mouseMovement.init({mousemoveCallback: mouseMovementCallback});
+function mouseMovementCallback() {
+  console.log(mouseMovement.directionX);
+  console.log(mouseMovement.speedX);
+  console.log(mouseMovement.directionY);
+  console.log(mouseMovement.speedY);
+  console.log(mouseMovement.diagonal);
+}
 
 const disabled = (`
     <div id="status" class="alert alert-danger" role="alert">

@@ -8,8 +8,10 @@ const path = require('path');
 
 require('electron-reload')(__dirname, {
   electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
-  ignored: /db|[\/\\]\./, argv: [] })
+  ignored: /db|[\/\\]\./, argv: []
+})
 
+let window;
 let client;
 let controller;
 let leftTimeout;
@@ -18,46 +20,34 @@ let isVisible;
 let keys = []
 let active = false
 const arrows = [37, 38, 39, 40]
+
 const result = () => keys.some(key => arrows.includes(key))
+const print = (a) => window.webContents.send('LOG_REQUEST', a);
+const isDev = () => process.mainModule.filename.indexOf('app.asar') === -1;
 
-let window;
+const opts = {
+  show: false,
+  minWidth: 900,
+  minHeight: 600,
+  autoHideMenuBar: true,
+  webPreferences: {
+    nodeIntegration: true,
+    contextIsolation: false
+  }
+}
 
-const createWindow = () => {
-  const mainWindow = new BrowserWindow({
-    show: false,
-    width: 900,
-    height: 600,
-    autoHideMenuBar: true,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false
-    }
-  });
+const createMainWindow = () => {
+  const mainWindow = new BrowserWindow(opts);
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
-
-  window = mainWindow
-
-  mainWindow.webContents.on('did-finish-load', function () {
-    mainWindow.show();
-    start()
-  });
-
+  mainWindow.webContents.on('did-finish-load', () => start());
+  mainWindow.on('show', () => isVisible = true)
+  mainWindow.on('hide', () => isVisible = false)
   mainWindow.on('close', function (event) {
-    if (!app.isQuiting) {
-      event.preventDefault();
-      mainWindow.hide();
-    }
-
-    return false;
+    if (app.isQuiting) return false
+    event.preventDefault();
+    mainWindow.hide();
   });
-
-  mainWindow.on('show', () => {
-    isVisible = true
-  })
-
-  mainWindow.on('hide', () => {
-    isVisible = false
-  })
+  window = mainWindow
 };
 
 function start() {
@@ -68,11 +58,8 @@ function start() {
   }
 }
 
-function print(a) {
-  window.webContents.send('LOG_REQUEST', a);
-}
-
 function main() {
+  window.show();
   client = new ViGEmClient()
   client.connect()
   controller = client.createX360Controller()
@@ -81,7 +68,6 @@ function main() {
   ioHook.start()
   ioHook.on('keydown', function (event) {
     if (event.rawcode == 46) return onEnabled()
-    if (event.rawcode == 35) return process.exit(0)
     if (!keys.includes(event.rawcode)) keys = [...keys, event.rawcode]
   })
 
@@ -102,8 +88,6 @@ function listen() {
   if (keys.includes(38) && keys.includes(37)) handleMoveLeftPad(-1, 1) //upleft
   if (keys.includes(40) && keys.includes(39)) handleMoveLeftPad(1, -1) //downright
   if (keys.includes(40) && keys.includes(37)) handleMoveLeftPad(-1, -1) //downleft
-
-  print(keys)
 
   leftTimeout = setTimeout(function () {
     listen();
@@ -128,9 +112,8 @@ function onEnabled() {
 }
 
 const getExtraFilesPath = () => {
-  var x = path.join(process.resourcesPath, '..')
-  var y = path.join(x, '/extraResources')
-  return y;
+  if (!isDev) return `${path.join(process.resourcesPath, '..')}\\extraResources`
+  return `${__dirname}\\extraResources`
 };
 
 function onDriverNotFound() {
@@ -152,7 +135,7 @@ function willQuit() {
   ioHook.stop()
 }
 
-app.on('ready', () => createWindow())
+app.on('ready', () => createMainWindow())
 app.on('window-all-closed', () => app.quit())
 app.on('will-quit', () => willQuit())
 app.whenReady().then(() => {
