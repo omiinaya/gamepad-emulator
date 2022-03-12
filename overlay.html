@@ -8,9 +8,10 @@
 </head>
 
 <body>
+    <div id="canvas"></div>
     <script type="text/javascript">
         const electron = require('electron')
-        const ipc = electron.ipcRenderer
+        const ipcRenderer = electron.ipcRenderer
         const MouseMovement = require('mouse-movement')
         const mouseMovement = new MouseMovement();
         mouseMovement.init({ mousemoveCallback: mouseMovementCallback });
@@ -20,10 +21,8 @@
                 pointerY: mouseMovement.directionY,
                 speedX: mouseMovement.speedX,
                 speedY: mouseMovement.speedY,
-                //oldX: mouseMovement.oldX,
-                //oldY: mouseMovement.oldY
             }
-            ipc.send('mouse', data)
+            ipcRenderer.send('mouse', data)
         }
     </script>
 </body>

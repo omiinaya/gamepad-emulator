@@ -17,7 +17,7 @@ let mouse;
 let controller;
 let leftTimeout;
 let mouseTimeout;
-let isVisible;
+//let isVisible;
 let keys = []
 let active = false;
 const arrows = [37, 38, 39, 40];
@@ -39,8 +39,8 @@ const createMainWindow = () => {
   });
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
   mainWindow.webContents.on('did-finish-load', () => start());
-  mainWindow.on('show', () => isVisible = true)
-  mainWindow.on('hide', () => isVisible = false)
+  //mainWindow.on('show', () => isVisible = true)
+  //mainWindow.on('hide', () => isVisible = false)
   mainWindow.on('close', function (event) {
     if (app.isQuiting) return false
     event.preventDefault();
@@ -92,22 +92,11 @@ function main() {
   ioHook.start()
   ioHook.on('keydown', (event) => handleKeyUp(event))
   ioHook.on('keyup', (event) => handleKeyDown(event))
-  globalShortcut.register('CmdOrCtrl + H', () => {
-    if (mouseTimeout) {
-      ipcMain.removeAllListeners('mouse');
-      clearTimeout(mouseTimeout);
-      mouseTimeout = undefined;
-    } else {
-      ipcMain.on('mouse', (event, data) => {
-        mouse = data;
-        handleMouseEvents();
-      })
-    }
-  });
 }
 
 function handleKeyUp(event) {
   if (event.rawcode == 46) return onEnabled()
+  if (event.rawcode == 35) return onMouse()
   if (!keys.includes(event.rawcode)) keys = [...keys, event.rawcode]
 }
 
@@ -117,12 +106,12 @@ function handleKeyDown(event) {
 }
 
 function listen() {
-  if (keys.includes(37)) handleMoveLeftPad(-1, 0) //left
-  if (keys.includes(38)) handleMoveLeftPad(0, 1) //up
   if (keys.includes(39)) handleMoveLeftPad(1, 0) //right
+  if (keys.includes(38)) handleMoveLeftPad(0, 1) //up
+  if (keys.includes(37)) handleMoveLeftPad(-1, 0) //left
   if (keys.includes(40)) handleMoveLeftPad(0, -1) //down
-  if (keys.includes(38) && keys.includes(37)) handleMoveLeftPad(-1, 1) //leftup
   if (keys.includes(38) && keys.includes(39)) handleMoveLeftPad(1, 1) //upright
+  if (keys.includes(38) && keys.includes(37)) handleMoveLeftPad(-1, 1) //leftup
   if (keys.includes(40) && keys.includes(39)) handleMoveLeftPad(1, -1) //rightdown
   if (keys.includes(40) && keys.includes(37)) handleMoveLeftPad(-1, -1) //downleft
 
@@ -132,8 +121,8 @@ function listen() {
 }
 
 function handleMoveLeftPad(x, y) {
-  controller.axis.leftX.setValue(x); // x-axis
-  controller.axis.leftY.setValue(y); // y-axis
+  controller.axis.leftX.setValue(x) // x-axis
+  controller.axis.leftY.setValue(y) // y-axis
 }
 
 function handleMouseEvents() {
@@ -143,28 +132,38 @@ function handleMouseEvents() {
     if (tmp_glob == mouse) {
       controller.axis.rightX.setValue(0)
       controller.axis.rightY.setValue(0)
-      return //console.log("The value hasn't changed");
     }
-
     if (mouse.pointerX === "left" && mouse.pointerY === "none") {
-      controller.axis.rightX.setValue(-1);
+      controller.axis.rightX.setValue(-mouse.speedX / 10)
       controller.axis.rightY.setValue(0)
-      //console.log('left')
     }
     if (mouse.pointerY === "up" && mouse.pointerX === "none") {
-      controller.axis.rightX.setValue(0);
-      controller.axis.rightY.setValue(1);
-      //console.log('up')
+      controller.axis.rightX.setValue(0)
+      controller.axis.rightY.setValue(mouse.speedY / 10)
     }
     if (mouse.pointerX === "right" && mouse.pointerY === "none") {
-      controller.axis.rightX.setValue(1);
-      controller.axis.rightY.setValue(0);
-      //console.log('right')
+      controller.axis.rightX.setValue(mouse.speedX / 10)
+      controller.axis.rightY.setValue(0)
     }
     if (mouse.pointerY === "down" && mouse.pointerX === "none") {
-      controller.axis.rightX.setValue(0);
-      controller.axis.rightY.setValue(-1);
-      //console.log('down')
+      controller.axis.rightX.setValue(0)
+      controller.axis.rightY.setValue(-mouse.speedY / 10)
+    }
+    if (mouse.pointerY === "up" && mouse.pointerX === "right") { //1, 1
+      controller.axis.rightX.setValue(mouse.speedX)
+      controller.axis.rightY.setValue(mouse.speedY)
+    }
+    if (mouse.pointerY === "up" && mouse.pointerX === "left") { //-1, 1
+      controller.axis.rightX.setValue(-mouse.speedX)
+      controller.axis.rightY.setValue(mouse.speedY)
+    }
+    if (mouse.pointerY === "down" && mouse.pointerX === "right") { // 1, -1
+      controller.axis.rightX.setValue(mouse.speedX)
+      controller.axis.rightY.setValue(-mouse.speedY)
+    }
+    if (mouse.pointerY === "down" && mouse.pointerX === "left") { //-1, -1
+      controller.axis.rightX.setValue(-mouse.speedX)
+      controller.axis.rightY.setValue(-mouse.speedY)
     }
   }, 100);
 }
@@ -179,6 +178,21 @@ function onEnabled() {
   window.webContents.send('STATUS_UPDATE', active);
   if (!active) return onExit()
   return listen()
+}
+
+function onMouse() {
+  if (mouseTimeout) {
+    ipcMain.removeAllListeners('mouse');
+    clearTimeout(mouseTimeout);
+    mouseTimeout = undefined;
+    controller.axis.rightX.setValue(0)
+    controller.axis.rightY.setValue(0)
+  } else {
+    ipcMain.on('mouse', (event, data) => {
+      mouse = data;
+      handleMouseEvents();
+    })
+  }
 }
 
 const getExtraFilesPath = () => {
