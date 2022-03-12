@@ -13,10 +13,8 @@ require('electron-reload')(__dirname, {
 
 let window;
 let client;
-let mouse;
 let controller;
 let leftTimeout;
-let mouseTimeout;
 //let isVisible;
 let keys = []
 let active = false;
@@ -47,31 +45,26 @@ const createMainWindow = () => {
     mainWindow.hide();
   });
   window = mainWindow
-  createOverlayWindow()
 };
 
 const createOverlayWindow = () => {
   const overlayWindow = new BrowserWindow({
+    width: 250,
+    height: 250,
+    autoHideMenuBar: true,
+    frame: false,
+    transparent: true,
+    skipTaskbar: true,
+    resizable: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
     },
-    fullscreenable: true,
-    autoHideMenuBar: true,
-    frame: false,
-    transparent: true,
-    resizable: false,
-    skipTaskbar: true,
   });
 
   overlayWindow.setAlwaysOnTop(true, 'screen-saver');
-  overlayWindow.setMinimizable(false);
-  overlayWindow.setFullScreen(true);
   overlayWindow.setVisibleOnAllWorkspaces(true);
   overlayWindow.loadFile(path.join(__dirname, 'overlay.html'));
-  overlayWindow.setIgnoreMouseEvents(true, {
-    forward: true
-  })
 }
 
 function start() {
@@ -96,7 +89,6 @@ function main() {
 
 function handleKeyUp(event) {
   if (event.rawcode == 46) return onEnabled()
-  if (event.rawcode == 35) return onMouse()
   if (!keys.includes(event.rawcode)) keys = [...keys, event.rawcode]
 }
 
@@ -125,49 +117,6 @@ function handleMoveLeftPad(x, y) {
   controller.axis.leftY.setValue(y) // y-axis
 }
 
-function handleMouseEvents() {
-  var tmp_glob = mouse
-  mouseTimeout = setTimeout(function () {
-    console.log(mouse)
-    if (tmp_glob == mouse) {
-      controller.axis.rightX.setValue(0)
-      controller.axis.rightY.setValue(0)
-    }
-    if (mouse.pointerX === "left" && mouse.pointerY === "none") {
-      controller.axis.rightX.setValue(-mouse.speedX / 10)
-      controller.axis.rightY.setValue(0)
-    }
-    if (mouse.pointerY === "up" && mouse.pointerX === "none") {
-      controller.axis.rightX.setValue(0)
-      controller.axis.rightY.setValue(mouse.speedY / 10)
-    }
-    if (mouse.pointerX === "right" && mouse.pointerY === "none") {
-      controller.axis.rightX.setValue(mouse.speedX / 10)
-      controller.axis.rightY.setValue(0)
-    }
-    if (mouse.pointerY === "down" && mouse.pointerX === "none") {
-      controller.axis.rightX.setValue(0)
-      controller.axis.rightY.setValue(-mouse.speedY / 10)
-    }
-    if (mouse.pointerY === "up" && mouse.pointerX === "right") { //1, 1
-      controller.axis.rightX.setValue(mouse.speedX)
-      controller.axis.rightY.setValue(mouse.speedY)
-    }
-    if (mouse.pointerY === "up" && mouse.pointerX === "left") { //-1, 1
-      controller.axis.rightX.setValue(-mouse.speedX)
-      controller.axis.rightY.setValue(mouse.speedY)
-    }
-    if (mouse.pointerY === "down" && mouse.pointerX === "right") { // 1, -1
-      controller.axis.rightX.setValue(mouse.speedX)
-      controller.axis.rightY.setValue(-mouse.speedY)
-    }
-    if (mouse.pointerY === "down" && mouse.pointerX === "left") { //-1, -1
-      controller.axis.rightX.setValue(-mouse.speedX)
-      controller.axis.rightY.setValue(-mouse.speedY)
-    }
-  }, 100);
-}
-
 function onExit() {
   handleMoveLeftPad(0, 0)
   clearTimeout(leftTimeout)
@@ -178,21 +127,6 @@ function onEnabled() {
   window.webContents.send('STATUS_UPDATE', active);
   if (!active) return onExit()
   return listen()
-}
-
-function onMouse() {
-  if (mouseTimeout) {
-    ipcMain.removeAllListeners('mouse');
-    clearTimeout(mouseTimeout);
-    mouseTimeout = undefined;
-    controller.axis.rightX.setValue(0)
-    controller.axis.rightY.setValue(0)
-  } else {
-    ipcMain.on('mouse', (event, data) => {
-      mouse = data;
-      handleMouseEvents();
-    })
-  }
 }
 
 const getExtraFilesPath = () => {
