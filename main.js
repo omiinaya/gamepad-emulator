@@ -1,6 +1,6 @@
 require('v8-compile-cache')
 
-const { app, BrowserWindow, Menu, Tray } = require('electron')
+const { app, BrowserWindow, Menu, Tray, globalShortcut, ipcMain } = require('electron')
 const ViGEmClient = require('vigemclient');
 const { exec } = require('child_process');
 const ioHook = require('iohook');
@@ -12,6 +12,7 @@ require('electron-reload')(__dirname, {
 })
 
 let window;
+let oWindow;
 let client;
 let controller;
 let leftTimeout;
@@ -48,7 +49,33 @@ const createMainWindow = () => {
     mainWindow.hide();
   });
   window = mainWindow
+  createOverlayWindow()
 };
+
+const createOverlayWindow = () => {
+  const overlayWindow = new BrowserWindow({
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+    },
+    fullscreenable: true,
+    autoHideMenuBar: true,
+    frame: false,
+    transparent: true,
+    resizable: false,
+    skipTaskbar: true,
+  });
+
+  overlayWindow.setAlwaysOnTop(true, 'screen-saver');
+  overlayWindow.setMinimizable(false);
+  overlayWindow.setFullScreen(true);
+  overlayWindow.setVisibleOnAllWorkspaces(true);
+  overlayWindow.loadFile(path.join(__dirname, 'overlay.html'));
+  overlayWindow.setIgnoreMouseEvents(true, {
+    forward: true
+  })
+  oWindow = overlayWindow
+}
 
 function start() {
   try {
@@ -75,6 +102,8 @@ function main() {
     keys = keys.filter(e => e !== event.rawcode)
     if (!result()) handleMoveLeftPad(0, 0)
   })
+
+  ipcMain.on('mouse', (event, data) => console.log(data))
 
   print("Ready")
 }
@@ -157,5 +186,7 @@ app.whenReady().then(() => {
   tray.setToolTip('Gamepad Emulator');
   tray.setContextMenu(contextMenu);
   tray.on('right-click', () => tray.popUpContextMenu())
-  tray.on('click', () => window.show());
+  tray.on('click', () => {
+    window.show()
+  });
 });

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Gamepad Emulator</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <div>test</div>
+    <script type="text/javascript">
+        const electron = require('electron')
+        const ipc = electron.ipcRenderer
+        const MouseMovement = require('mouse-movement')
+        const mouseMovement = new MouseMovement();
+        mouseMovement.init({ mousemoveCallback: mouseMovementCallback });
+        function mouseMovementCallback() {
+            console.log(mouseMovement.directionX);
+            console.log(mouseMovement.speedX);
+            console.log(mouseMovement.directionY);
+            console.log(mouseMovement.speedY);
+            console.log(mouseMovement.diagonal);
+            ipcRenderer.send('mouse'. mouseMovement.directionX)
+        }
+    </script>
+</body>
+<script src="./script.js"></script>
+
+</html>
