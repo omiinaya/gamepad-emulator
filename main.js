@@ -13,6 +13,7 @@ require('electron-reload')(__dirname, {
 
 let window;
 let client;
+let mouse;
 let controller;
 let leftTimeout;
 let isVisible;
@@ -90,7 +91,10 @@ function main() {
   ioHook.start()
   ioHook.on('keydown', (event) => handleKeyUp(event))
   ioHook.on('keyup', (event) => handleKeyDown(event))
-  ipcMain.on('mouse', (event, data) => handleMouseEvents(data))
+  ipcMain.on('mouse', (event, data) => {
+    mouse = data
+    handleMouseEvents()
+  })
 }
 
 function handleKeyUp(event) {
@@ -123,43 +127,37 @@ function handleMoveLeftPad(x, y) {
   controller.axis.leftY.setValue(y); // y-axis
 }
 
-function handleMouseEvents(data) {
-  if (data.pointerX === "left" && data.pointerY === "none") {
-    if (data.pointerX === "right") {
+function handleMouseEvents() {
+  var tmp_glob = mouse
+  setTimeout(function () {
+    if (tmp_glob == mouse) {
       controller.axis.rightX.setValue(0)
-      return;
+      controller.axis.rightY.setValue(0)
+      return console.log("The value hasn't changed");
     }
-    controller.axis.rightX.setValue(-1);
-    controller.axis.rightY.setValue(0)
-    console.log('left')
-  }
-  if (data.pointerY === "up" && data.pointerX === "none") {
-    if (data.pointerY === "down") {
-      controller.axis.rightY.setValue(0);
-      return;
+    
+    if (mouse.pointerX === "left" && mouse.pointerY === "none") {
+      controller.axis.rightX.setValue(-1);
+      controller.axis.rightY.setValue(0)
+      console.log('left')
     }
-    controller.axis.rightX.setValue(0);
-    controller.axis.rightY.setValue(1);
-    console.log('up')
-  }
-  if (data.pointerX === "right" && data.pointerY === "none") {
-    if (data.pointerX === "left") {
+    if (mouse.pointerY === "up" && mouse.pointerX === "none") {
       controller.axis.rightX.setValue(0);
-      return
+      controller.axis.rightY.setValue(1);
+      console.log('up')
     }
-    controller.axis.rightX.setValue(1);
-    controller.axis.rightY.setValue(0);
-    console.log('right')
-  }
-  if (data.pointerY === "down" && data.pointerX === "none") {
-    if (data.pointerY === "up") {
+    if (mouse.pointerX === "right" && mouse.pointerY === "none") {
+      controller.axis.rightX.setValue(1);
       controller.axis.rightY.setValue(0);
-      return;
+      console.log('right')
     }
-    controller.axis.rightX.setValue(0);
-    controller.axis.rightY.setValue(-1);
-    console.log('down')
-  }
+    if (mouse.pointerY === "down" && mouse.pointerX === "none") {
+      controller.axis.rightX.setValue(0);
+      controller.axis.rightY.setValue(-1);
+      console.log('down')
+    }
+    return console.log("The value has changed");
+  }, 100);
 }
 
 function onExit() {
