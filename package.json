@@ -16,6 +16,7 @@
   "dependencies": {
     "iohook": "^0.9.3",
     "mouse-movement": "^0.0.9",
+    "observable-slim": "^0.1.5",
     "v8-compile-cache": "^2.3.0",
     "vigemclient": "^1.3.0"
   },
