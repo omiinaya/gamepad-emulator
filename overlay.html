@@ -8,7 +8,6 @@
 </head>
 
 <body>
-    <div>test</div>
     <script type="text/javascript">
         const electron = require('electron')
         const ipc = electron.ipcRenderer
@@ -16,12 +15,13 @@
         const mouseMovement = new MouseMovement();
         mouseMovement.init({ mousemoveCallback: mouseMovementCallback });
         function mouseMovementCallback() {
-            console.log(mouseMovement.directionX);
-            console.log(mouseMovement.speedX);
-            console.log(mouseMovement.directionY);
-            console.log(mouseMovement.speedY);
-            console.log(mouseMovement.diagonal);
-            ipcRenderer.send('mouse'. mouseMovement.directionX)
+            data = {
+                pointerX: mouseMovement.directionX,
+                pointerY: mouseMovement.directionY,
+                speedX: mouseMovement.speedX,
+                speedY: mouseMovement.speedY
+            }
+            ipc.send('mouse', data)
         }
     </script>
 </body>

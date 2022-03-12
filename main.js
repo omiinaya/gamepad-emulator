@@ -103,7 +103,7 @@ function main() {
     if (!result()) handleMoveLeftPad(0, 0)
   })
 
-  ipcMain.on('mouse', (event, data) => console.log(data))
+  ipcMain.on('mouse', (event, data) => print(data))
 
   print("Ready")
 }
