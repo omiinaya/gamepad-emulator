@@ -11,13 +11,7 @@ require('electron-reload')(__dirname, {
   ignored: /db|[\/\\]\./, argv: []
 })
 
-let window;
-let oWindow;
-let client;
-let controller;
-let leftTimeout;
-let isVisible;
-
+let window; client; controller; leftTimeout; isVisible;
 let keys = []
 let active = false
 const arrows = [37, 38, 39, 40]
@@ -26,19 +20,17 @@ const result = () => keys.some(key => arrows.includes(key))
 const print = (a) => window.webContents.send('LOG_REQUEST', a);
 const isDev = () => process.mainModule.filename.indexOf('app.asar') === -1;
 
-const opts = {
-  show: false,
-  minWidth: 900,
-  minHeight: 600,
-  autoHideMenuBar: true,
-  webPreferences: {
-    nodeIntegration: true,
-    contextIsolation: false
-  }
-}
-
 const createMainWindow = () => {
-  const mainWindow = new BrowserWindow(opts);
+  const mainWindow = new BrowserWindow({
+    show: false,
+    minWidth: 900,
+    minHeight: 600,
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
   mainWindow.webContents.on('did-finish-load', () => start());
   mainWindow.on('show', () => isVisible = true)
@@ -74,7 +66,6 @@ const createOverlayWindow = () => {
   overlayWindow.setIgnoreMouseEvents(true, {
     forward: true
   })
-  oWindow = overlayWindow
 }
 
 function start() {
@@ -91,21 +82,21 @@ function main() {
   client.connect()
   controller = client.createX360Controller()
   controller.connect()
-
+  
   ioHook.start()
-  ioHook.on('keydown', function (event) {
-    if (event.rawcode == 46) return onEnabled()
-    if (!keys.includes(event.rawcode)) keys = [...keys, event.rawcode]
-  })
+  ioHook.on('keydown', (event) => handleKeyUp(event))
+  ioHook.on('keyup', (event) => handleKeyDown(event))
+  ipcMain.on('mouse', (event, data) => handleMouseEvents(data))
+}
 
-  ioHook.on('keyup', function (event) {
-    keys = keys.filter(e => e !== event.rawcode)
-    if (!result()) handleMoveLeftPad(0, 0)
-  })
+function handleKeyUp(event) {
+  if (event.rawcode == 46) return onEnabled()
+  if (!keys.includes(event.rawcode)) keys = [...keys, event.rawcode]
+}
 
-  ipcMain.on('mouse', (event, data) => print(data))
-
-  print("Ready")
+function handleKeyDown(event) {
+  keys = keys.filter(e => e !== event.rawcode)
+  if (!result()) handleMoveLeftPad(0, 0)
 }
 
 function listen() {
@@ -126,6 +117,10 @@ function listen() {
 function handleMoveLeftPad(x, y) {
   controller.axis.leftX.setValue(x); // x-axis
   controller.axis.leftY.setValue(y); // y-axis
+}
+
+function handleMouseEvents(data) {
+  print(data)
 }
 
 function onExit() {
