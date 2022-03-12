@@ -11,7 +11,11 @@ require('electron-reload')(__dirname, {
   ignored: /db|[\/\\]\./, argv: []
 })
 
-let window; client; controller; leftTimeout; isVisible;
+let window;
+let client;
+let controller;
+let leftTimeout;
+let isVisible;
 let keys = []
 let active = false
 const arrows = [37, 38, 39, 40]
@@ -82,7 +86,7 @@ function main() {
   client.connect()
   controller = client.createX360Controller()
   controller.connect()
-  
+
   ioHook.start()
   ioHook.on('keydown', (event) => handleKeyUp(event))
   ioHook.on('keyup', (event) => handleKeyDown(event))
@@ -104,9 +108,9 @@ function listen() {
   if (keys.includes(38)) handleMoveLeftPad(0, 1) //up
   if (keys.includes(39)) handleMoveLeftPad(1, 0) //right
   if (keys.includes(40)) handleMoveLeftPad(0, -1) //down
-  if (keys.includes(38) && keys.includes(39)) handleMoveLeftPad(1, 1) //up+right
-  if (keys.includes(38) && keys.includes(37)) handleMoveLeftPad(-1, 1) //upleft
-  if (keys.includes(40) && keys.includes(39)) handleMoveLeftPad(1, -1) //downright
+  if (keys.includes(38) && keys.includes(37)) handleMoveLeftPad(-1, 1) //leftup
+  if (keys.includes(38) && keys.includes(39)) handleMoveLeftPad(1, 1) //upright
+  if (keys.includes(40) && keys.includes(39)) handleMoveLeftPad(1, -1) //rightdown
   if (keys.includes(40) && keys.includes(37)) handleMoveLeftPad(-1, -1) //downleft
 
   leftTimeout = setTimeout(function () {
@@ -120,7 +124,34 @@ function handleMoveLeftPad(x, y) {
 }
 
 function handleMouseEvents(data) {
-  print(data)
+  if (data.pointerX === "left" && data.pointerY === "none") {
+    if (data.pointerX === "right") {
+      return controller.axis.rightX.setValue(0);
+    }
+    controller.axis.rightX.setValue(-1);
+    console.log('left')
+  }
+  if (data.pointerY === "up" && data.pointerX === "none") {
+    if (data.pointerY === "down") {
+      return controller.axis.rightY.setValue(0);
+    }
+    controller.axis.rightY.setValue(1);
+    console.log('up')
+  }
+  if (data.pointerX === "right" && data.pointerY === "none") {
+    if (data.pointerX === "left") {
+      return controller.axis.rightX.setValue(0);
+    }
+    controller.axis.rightX.setValue(1);
+    console.log('right')
+  }
+  if (data.pointerY === "down" && data.pointerX === "none") {
+    if (data.pointerY === "up") {
+      return controller.axis.rightY.setValue(0);
+    }
+    controller.axis.rightY.setValue(-1);
+    console.log('down')
+  }
 }
 
 function onExit() {
