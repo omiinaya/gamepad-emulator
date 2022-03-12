@@ -3,13 +3,13 @@ const ipc = electron.ipcRenderer
 
 const disabled = (`
     <div id="status" class="alert alert-danger" role="alert">
-      STATUS: Disabled.
+      STATUS: Disabled
     </div>
 `)
 
 const enabled = (`
     <div id="status" class="alert alert-success" role="alert">
-        STATUS: Enabled.
+        STATUS: Enabled
     </div>
 `)
 

@@ -1,12 +1,14 @@
-try {
-  require('electron-reloader')(module)
-} catch (_) {}
+require('v8-compile-cache')
 
 const { app, BrowserWindow, Menu, Tray } = require('electron')
 const ViGEmClient = require('vigemclient');
 const { exec } = require('child_process');
 const ioHook = require('iohook');
 const path = require('path');
+
+require('electron-reload')(__dirname, {
+  electron: path.join(__dirname, 'node_modules', '.bin', 'electron'),
+  ignored: /db|[\/\\]\./, argv: [] })
 
 let client;
 let controller;
@@ -23,8 +25,8 @@ let window;
 const createWindow = () => {
   const mainWindow = new BrowserWindow({
     show: false,
-    width: 500,
-    height: 350,
+    width: 900,
+    height: 600,
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
